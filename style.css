@@ -89,3 +89,6 @@ dialog::backdrop{background:rgba(40,10,25,.45)}
 .auth .msg{flex-basis:100%;margin:0;font-size:14px;color:var(--soft)}
 .auth.in{border-style:dashed}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* garante que elementos com o atributo hidden fiquem escondidos */
+[hidden]{display:none!important}
