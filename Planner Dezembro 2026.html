@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planner Dezembro 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: pessoal e carinhoso, um diário de dezembro.
+   IDEA: o próprio planner impresso, cada dia vira um envelope de fotos.
+   PICTURE: o calendário é a peça principal, com miniaturas das fotos nos dias.
+   COLOUR and TYPE: rosa claro do planner, borda roxa, tinta preta; Archivo larga e pesada.
+   LAYOUT: título grande com o ano à direita, grade de 7 colunas; no celular vira agenda em lista. */
+:root{color-scheme:light dark;
+  --bg:light-dark(#fdeced,#1d1418);--paper:light-dark(#ffffff,#271c21);--head:light-dark(#fbdfe2,#3a2830);
+  --ink:light-dark(#111,#f7eef0);--soft:light-dark(#6d5a5f,#c4b0b6);--line:light-dark(#2a2a2a,#6b5560);
+  --frame:light-dark(#8b5cf6,#a98bfa);--accent:light-dark(#e2557a,#ff86a6);--empty:light-dark(#fff8f8,#22181c)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Archivo",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(4vw,14px);max-width:1280px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:clamp(16px,3vw,28px)}
+h1{font-size:clamp(44px,8vw,92px);font-weight:850;font-stretch:112%;letter-spacing:-.03em;line-height:1;margin:0}
+.year{font-size:clamp(36px,6.5vw,76px);font-weight:400;font-stretch:105%;letter-spacing:-.02em;line-height:1}
+.status{font-size:14px;color:var(--soft);margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--soft);flex:none}
+.status.ok .dot{background:#2fa36b}.status.warn .dot{background:#e0a020}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:2.5px solid var(--frame);background:var(--paper)}
+.wd{background:var(--head);text-align:center;font-weight:600;font-size:15px;padding:12px 4px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.wd:nth-child(7){border-right:0}
+.day{position:relative;min-height:128px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 8px 34px;background:var(--paper);
+  font:inherit;color:inherit;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:background .15s}
+.day:nth-child(7n){border-right:0}
+.day:hover{background:light-dark(#fff3f5,#30222a)}
+.day:focus-visible{outline:3px solid var(--accent);outline-offset:-3px;z-index:1}
+.day.blank{cursor:default;background:var(--paper)}
+.num{position:absolute;top:6px;left:8px;font-size:14px;font-weight:500}
+.dname{display:none}
+.ev{font-size:clamp(12px,1.25vw,15px);font-weight:600;line-height:1.3;margin-top:14px}
+.ev+.ev{margin-top:4px}
+.ev small{display:block;font-weight:500;font-size:.92em}
+.mark{font-size:44px;font-weight:900;line-height:1;margin:auto}
+.thumbs{position:absolute;left:8px;bottom:7px;display:flex;align-items:center}
+.thumbs img{width:24px;height:24px;border-radius:50%;object-fit:cover;border:2px solid var(--paper);margin-left:-7px;background:var(--head)}
+.thumbs img:first-child{margin-left:0}
+.thumbs span{font-size:12px;font-weight:700;margin-left:5px;color:var(--accent)}
+.add{position:absolute;right:7px;bottom:6px;width:22px;height:22px;opacity:.35;color:var(--ink)}
+.day:hover .add,.day:focus-visible .add{opacity:.9;color:var(--accent)}
+.today{box-shadow:inset 0 0 0 3px var(--accent)}
+.note{font-size:14px;color:var(--soft);margin-top:14px}
+/* modal */
+dialog{border:0;padding:0;width:min(760px,94vw);max-height:90vh;background:var(--paper);color:var(--ink);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(40,10,25,.45)}
+.mhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:22px 24px 14px;border-bottom:2px solid var(--frame);background:var(--head)}
+.mhead h2{margin:0;font-size:32px;font-weight:850;font-stretch:110%;line-height:1.05}
+.mhead p{margin:4px 0 0;color:var(--soft);font-size:15px}
+.mbody{padding:18px 24px 24px;overflow:auto;max-height:calc(90vh - 110px)}
+.agenda{list-style:none;margin:0 0 18px;padding:0}
+.agenda li{display:grid;grid-template-columns:5.2em 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.agenda b{font-size:18px;white-space:nowrap}.agenda span small{display:block;color:var(--soft);font-size:14px}
+.btn{font:600 16px "Archivo",sans-serif;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:focus-visible,.x:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn[disabled]{opacity:.5;cursor:wait}
+.x{width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--ink);font-size:28px;cursor:pointer;flex:none}
+.drop{border:2px dashed var(--frame);border-radius:14px;padding:18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:16px}
+.drop.over{background:light-dark(#f3edff,#2f2440)}
+.drop p{margin:0;color:var(--soft);font-size:14px}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.ph{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--head)}
+.ph img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+.ph button{position:absolute;top:6px;right:6px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:18px;cursor:pointer}
+.empty{color:var(--soft);font-size:15px;text-align:center;padding:16px 0}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;border-radius:12px;background:light-dark(#fff0f3,#3a2830);margin-bottom:12px;font-size:15px}
+#lb{width:auto;max-width:96vw;max-height:94vh;background:transparent;box-shadow:none}
+#lb img{max-width:96vw;max-height:86vh;display:block;border-radius:10px}
+#lb .bar{display:flex;justify-content:center;gap:10px;margin-top:10px}
+#lb .bar button{background:#fff;color:#111;border-color:#fff}
+#lb .bar .ghost{background:transparent;color:#fff}
+@media(max-width:720px){
+  .cal{grid-template-columns:minmax(0,1fr)}
+  .wd,.day.blank{display:none}
+  .day{min-height:0;border-right:0;flex-direction:row;flex-wrap:wrap;align-items:center;text-align:start;padding:12px 14px 12px 64px;gap:4px 14px}
+  .num{top:12px;left:14px;font-size:24px;font-weight:800}
+  .dname{display:block;position:absolute;top:42px;left:14px;font-size:12px;color:var(--soft)}
+  .ev{margin:0}.ev+.ev{margin:0}
+  .mark{font-size:28px;margin:0}
+  .thumbs{position:static;margin-left:auto}
+  .add{position:static}
+  .day{min-height:68px}
+  .mhead h2{font-size:26px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="band">
+  <header><h1>December</h1><div class="year">2026</div></header>
+  <p class="status" id="status"><span class="dot"></span><span id="statusTxt">Preparando o álbum…</span></p>
+  <div class="cal" id="cal" aria-label="Calendário de dezembro de 2026"></div>
+  <p class="note">Toque em qualquer dia para ver a programação e guardar as fotos daquele dia.</p>
+</main>
+
+<dialog id="dlg" aria-labelledby="dTitle">
+  <div class="mhead">
+    <div><h2 id="dTitle"></h2><p id="dSub"></p></div>
+    <button class="x" id="close" aria-label="Fechar">×</button>
+  </div>
+  <div class="mbody">
+    <ul class="agenda" id="agenda"></ul>
+    <div class="drop" id="drop">
+      <button class="btn" id="pick"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Adicionar fotos</button>
+      <p id="dropHint">ou arraste as imagens para cá</p>
+      <input type="file" id="file" accept="image/*" multiple hidden>
+    </div>
+    <div id="confirmBox"></div>
+    <div class="gal" id="gal"></div>
+  </div>
+</dialog>
+
+<dialog id="lb" aria-label="Foto ampliada">
+  <img id="lbImg" alt="">
+  <div class="bar">
+    <button class="btn" id="lbPrev" aria-label="Foto anterior">‹</button>
+    <button class="btn ghost" id="lbClose">Fechar</button>
+    <button class="btn" id="lbNext" aria-label="Próxima foto">›</button>
+  </div>
+</dialog>
+
+<script>
+{
+const MONTH = 11, YEAR = 2026; // dezembro (0-index)
+const WD = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const WD_PT = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+const T = (h,t,l)=>({h,t,l});
+const treino = T('18h','treino','life'), cam = T('19h','caminhada','');
+const DAYS = {
+  1:[treino,cam], 2:[treino,cam],
+  3:[T('14h','ficar juntos',"Ana's House"),treino],
+  4:'X', 5:[T('14h','Requeijão',"Tete's House")],
+  6:[T('19h','Raffus','Raffus-RGT')], 7:[treino,cam], 8:'X',
+  9:[T('15h','treino','life')], 10:[treino,cam],
+  11:[T('19h30','bingo','Salão Paroquial')], 12:[T('19h30','bingo','Salão Paroquial')],
+  13:'?', 14:[treino,cam], 15:'X', 16:[T('15h','treino','life')],
+  17:[T('15h','treino','Panobianco')], 18:[treino],
+  19:[T('15h','treino','ProForma'),T('17h','Mequi','Mequi')],
+  20:[T('14h','Dia com AMOR',"Tete's House")],
+  21:[treino,cam], 22:[treino,cam], 23:[treino,cam],
+  29:[T('19h30','Date','A definir')], 31:'?'
+};
+
+const $ = id=>document.getElementById(id);
+const esc = s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let photos = {};          // dia -> [{id, url, ...}]
+let store = null;         // backend ativo
+let openDay = null, lbList = [], lbIdx = 0;
+
+/* ---------- Armazenamento: nuvem (artefato) ou navegador (IndexedDB) ---------- */
+function setStatus(txt, cls){ $('statusTxt').textContent = txt; $('status').className = 'status ' + (cls||''); }
+
+async function shrink(file){
+  try{
+    const bmp = await createImageBitmap(file);
+    const max = 1800, k = Math.min(1, max/Math.max(bmp.width,bmp.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(bmp.width*k); c.height = Math.round(bmp.height*k);
+    c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+    return await new Promise(r=>c.toBlob(b=>r(b||file),'image/jpeg',.85));
+  }catch(e){ return file; }
+}
+
+function cloudStore(db, assets){
+  const col = db.collection('fotos');
+  return {
+    kind:'cloud', canWrite: !!assets,
+    start(onData){
+      const timer = setTimeout(()=>setStatus('Não consegui alcançar o álbum online ainda — tentando de novo…','warn'),10000);
+      col.onSnapshot(snap=>{
+        if(!snap.metadata.fromCache){ clearTimeout(timer); setStatus(assets ? 'Fotos salvas online — aparecem em qualquer dispositivo' : 'Fotos online (somente visualização)','ok'); }
+        const out = {};
+        snap.docs.forEach(d=>{ const v=d.data(); if(!v||!v.assetId) return; (out[v.dia] ||= []).push({id:d.id, url:'/_blob/'+v.assetId, assetId:v.assetId, t:v.criadoEm||0}); });
+        Object.values(out).forEach(a=>a.sort((x,y)=>x.t-y.t));
+        onData(out);
+      }, e=>{ clearTimeout(timer); setStatus('O álbum online parou de responder. Recarregue a página.','warn'); });
+    },
+    async add(dia, file){
+      const blob = await shrink(file);
+      const r = await assets.upload(blob, {type: blob.type && blob.type.startsWith('image/') ? blob.type : 'image/jpeg'});
+      await col.doc().set({dia, assetId:r.id, nome:file.name||'', criadoEm:Date.now()});
+    },
+    async remove(p){ await col.doc(p.id).delete(); try{ await assets.delete(p.assetId); }catch(e){} }
+  };
+}
+
+function localStore(){
+  let dbp = new Promise((res,rej)=>{
+    const rq = indexedDB.open('planner-dez-2026',1);
+    rq.onupgradeneeded = ()=>rq.result.createObjectStore('fotos',{keyPath:'id'});
+    rq.onsuccess = ()=>res(rq.result); rq.onerror = ()=>rej(rq.error);
+  });
+  const urls = new Map();
+  let notify = ()=>{};
+  const tx = async (mode, fn)=>{ const d = await dbp; return new Promise((res,rej)=>{ const t=d.transaction('fotos',mode); const r=fn(t.objectStore('fotos')); t.oncomplete=()=>res(r&&r.result); t.onerror=()=>rej(t.error); }); };
+  async function load(){
+    const all = await tx('readonly', s=>s.getAll()) || [];
+    const out = {};
+    all.sort((a,b)=>a.t-b.t).forEach(r=>{
+      if(!urls.has(r.id)) urls.set(r.id, URL.createObjectURL(r.blob));
+      (out[r.dia] ||= []).push({id:r.id, url:urls.get(r.id), t:r.t});
+    });
+    notify(out);
+  }
+  return {
+    kind:'local', canWrite:true,
+    start(onData){ notify = onData; load().then(()=>setStatus('Fotos salvas neste navegador (só aparecem neste aparelho)','ok')).catch(()=>{ this.canWrite=false; setStatus('Este navegador não permite guardar fotos aqui.','warn'); onData({}); }); },
+    async add(dia, file){ const blob = await shrink(file); await tx('readwrite', s=>s.put({id:Date.now()+'-'+Math.random().toString(36).slice(2,8), dia, blob, t:Date.now()})); await load(); },
+    async remove(p){ await tx('readwrite', s=>s.delete(p.id)); URL.revokeObjectURL(p.url); urls.delete(p.id); await load(); }
+  };
+}
+
+async function initStore(){
+  let db = null, assets = null;
+  if(window.claude && typeof window.claude.use === 'function'){
+    try{ [db, assets] = await Promise.all([window.claude.use('db'), window.claude.use('assets')]); }catch(e){}
+  }
+  store = db ? cloudStore(db, assets) : localStore();
+  store.start(d=>{ photos = d; render(); if(openDay) renderGallery(); });
+  render();
+}
+
+/* ---------- Calendário ---------- */
+function render(){
+  const first = new Date(YEAR,MONTH,1).getDay();
+  const total = new Date(YEAR,MONTH+1,0).getDate();
+  const now = new Date(); const todayN = (now.getFullYear()===YEAR && now.getMonth()===MONTH) ? now.getDate() : 0;
+  let h = WD.map(w=>`<div class="wd">${w}</div>`).join('');
+  const cells = Math.ceil((first+total)/7)*7;
+  for(let i=0;i<cells;i++){
+    const n = i-first+1;
+    if(n<1||n>total){ h += `<div class="day blank" aria-hidden="true"></div>`; continue; }
+    const d = DAYS[n], ph = photos[n]||[];
+    let inner = '';
+    if(d==='X'||d==='?') inner = `<span class="mark">${d}</span>`;
+    else if(d) inner = d.map(e=>`<span class="ev">${esc(e.h)} – ${esc(e.t)}${e.l?`<small>Local: ${esc(e.l)}</small>`:''}</span>`).join('');
+    const thumbs = ph.length ? `<span class="thumbs">${ph.slice(0,3).map(p=>`<img src="${esc(p.url)}" alt="" loading="lazy">`).join('')}<span>${ph.length}</span></span>` : '';
+    const wd = new Date(YEAR,MONTH,n).getDay();
+    h += `<button class="day${n===todayN?' today':''}" data-d="${n}" aria-label="${n} de dezembro, ${WD_PT[wd]}${ph.length?`, ${ph.length} foto${ph.length>1?'s':''}`:''}">
+      <span class="num">${n}</span><span class="dname">${WD_PT[wd].slice(0,3)}</span>${inner}${thumbs}
+      <svg class="add" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="3"/><circle cx="12" cy="13" r="3.5"/><path d="M8.5 6l1.5-2h4l1.5 2"/></svg></button>`;
+  }
+  $('cal').innerHTML = h;
+}
+
+/* ---------- Modal do dia ---------- */
+function openModal(n){
+  openDay = n;
+  const wd = new Date(YEAR,MONTH,n).getDay(), d = DAYS[n];
+  $('dTitle').textContent = `${n} de dezembro`;
+  $('dSub').textContent = WD_PT[wd] + (d==='X' ? ' · dia livre' : d==='?' ? ' · a definir' : '');
+  $('agenda').innerHTML = Array.isArray(d) ? d.map(e=>`<li><b>${esc(e.h)}</b><span>${esc(e.t)}${e.l?`<small>Local: ${esc(e.l)}</small>`:''}</span></li>`).join('') : '';
+  $('confirmBox').innerHTML = '';
+  renderGallery();
+  $('dlg').showModal();
+}
+
+function renderGallery(){
+  const list = photos[openDay]||[];
+  const can = store && store.canWrite;
+  $('drop').style.display = can ? '' : 'none';
+  $('gal').innerHTML = list.length
+    ? list.map((p,i)=>`<div class="ph"><img src="${esc(p.url)}" alt="Foto ${i+1} do dia ${openDay}" data-i="${i}">${can?`<button data-del="${i}" aria-label="Apagar foto ${i+1}">×</button>`:''}</div>`).join('')
+    : `<p class="empty" style="grid-column:1/-1">Nenhuma foto neste dia ainda.</p>`;
+}
+
+async function addFiles(files){
+  const imgs = [...files].filter(f=>f.type.startsWith('image/') || /\.(heic|heif|jpe?g|png|webp|gif)$/i.test(f.name));
+  if(!imgs.length || !store || !store.canWrite) return;
+  const b = $('pick'), dia = openDay; b.disabled = true;
+  let ok = 0, fail = 0;
+  for(const f of imgs){
+    $('dropHint').textContent = `Enviando ${ok+fail+1} de ${imgs.length}…`;
+    try{ await store.add(dia, f); ok++; }catch(e){ fail++; console.warn(e); }
+  }
+  b.disabled = false;
+  $('dropHint').textContent = fail ? `${ok} enviada(s), ${fail} não puderam ser salvas (formato ou espaço).` : 'ou arraste as imagens para cá';
+}
+
+function askDelete(i){
+  const p = (photos[openDay]||[])[i]; if(!p) return;
+  $('confirmBox').innerHTML = `<div class="confirm"><span>Apagar esta foto para sempre?</span><button class="btn" id="yesDel">Apagar</button><button class="btn ghost" id="noDel">Cancelar</button></div>`;
+  $('yesDel').onclick = async ()=>{ $('confirmBox').innerHTML=''; try{ await store.remove(p); }catch(e){ setStatus('Não foi possível apagar a foto.','warn'); } };
+  $('noDel').onclick = ()=>{ $('confirmBox').innerHTML=''; };
+}
+
+function showLb(i){ lbList = photos[openDay]||[]; lbIdx = i; $('lbImg').src = lbList[i].url; if(!$('lb').open) $('lb').showModal(); }
+function stepLb(k){ if(!lbList.length) return; lbIdx = (lbIdx+k+lbList.length)%lbList.length; $('lbImg').src = lbList[lbIdx].url; }
+
+/* ---------- Eventos ---------- */
+$('cal').addEventListener('click', e=>{ const b = e.target.closest('.day[data-d]'); if(b) openModal(+b.dataset.d); });
+$('close').onclick = ()=>$('dlg').close();
+$('dlg').addEventListener('close', ()=>{ openDay = null; });
+$('dlg').addEventListener('click', e=>{ if(e.target===$('dlg')) $('dlg').close(); });
+$('pick').onclick = ()=>$('file').click();
+$('file').onchange = e=>{ addFiles(e.target.files); e.target.value=''; };
+const drop = $('drop');
+['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop', e=>addFiles(e.dataTransfer.files));
+$('gal').addEventListener('click', e=>{
+  const del = e.target.closest('[data-del]'); if(del) return askDelete(+del.dataset.del);
+  const im = e.target.closest('img[data-i]'); if(im) showLb(+im.dataset.i);
+});
+$('lbClose').onclick = ()=>$('lb').close();
+$('lbPrev').onclick = ()=>stepLb(-1);
+$('lbNext').onclick = ()=>stepLb(1);
+$('lb').addEventListener('keydown', e=>{ if(e.key==='ArrowLeft') stepLb(-1); if(e.key==='ArrowRight') stepLb(1); });
+
+render();
+initStore();
+}
+</script>
+</body>
+</html>
