@@ -95,6 +95,19 @@ $('loginForm').addEventListener('submit', async e=>{
 });
 $('sair').onclick = ()=>sb.auth.signOut();
 
+/* ---------- Leque de fotos ---------- */
+// 1 foto: cobre o quadro inteiro. 2+ fotos: até 4 cartas abertas em leque sobre um fundo desfocado.
+function fan(ph){
+  if(ph.length === 1) return `<span class="fan single"><img src="${esc(ph[0].url)}" alt="" loading="lazy"></span>`;
+  const shown = ph.slice(-4);                 // as 4 mais recentes
+  const n = shown.length, abertura = {2:16, 3:26, 4:34}[n];
+  const cards = shown.map((p,i)=>{
+    const r = -abertura/2 + i*abertura/(n-1);
+    return `<img class="card" src="${esc(p.url)}" alt="" loading="lazy" style="--r:${r.toFixed(1)}deg;--i:${i}">`;
+  }).join('');
+  return `<span class="fan multi"><img class="bg" src="${esc(shown[n-1].url)}" alt="" loading="lazy">${cards}</span>`;
+}
+
 /* ---------- Calendário ---------- */
 function render(){
   const first = new Date(YEAR,MONTH,1).getDay();
@@ -107,12 +120,16 @@ function render(){
     if(n<1||n>total){ h += `<div class="day blank" aria-hidden="true"></div>`; continue; }
     const d = DAYS[n], ph = photos[n]||[];
     let inner = '';
-    if(d==='X'||d==='?') inner = `<span class="mark">${d}</span>`;
+    if(ph.length){
+      // Dia com fotos: as fotos cobrem o quadro e a programação vira uma legenda curta
+      const cap = Array.isArray(d) ? d.map(e=>`${esc(e.h)} ${esc(e.t)}`).join(' · ') : '';
+      inner = fan(ph) + (cap ? `<span class="cap">${cap}</span>` : '') + `<span class="count">${ph.length} foto${ph.length>1?'s':''}</span>`;
+    }
+    else if(d==='X'||d==='?') inner = `<span class="mark">${d}</span>`;
     else if(d) inner = d.map(e=>`<span class="ev">${esc(e.h)} – ${esc(e.t)}${e.l?`<small>Local: ${esc(e.l)}</small>`:''}</span>`).join('');
-    const thumbs = ph.length ? `<span class="thumbs">${ph.slice(0,3).map(p=>`<img src="${esc(p.url)}" alt="" loading="lazy">`).join('')}<span>${ph.length}</span></span>` : '';
     const wd = new Date(YEAR,MONTH,n).getDay();
-    h += `<button class="day${n===todayN?' today':''}" data-d="${n}" aria-label="${n} de dezembro, ${WD_PT[wd]}${ph.length?`, ${ph.length} foto${ph.length>1?'s':''}`:''}">
-      <span class="num">${n}</span><span class="dname">${WD_PT[wd].slice(0,3)}</span>${inner}${thumbs}
+    h += `<button class="day${n===todayN?' today':''}${ph.length?' has-ph':''}" data-d="${n}" aria-label="${n} de dezembro, ${WD_PT[wd]}${ph.length?`, ${ph.length} foto${ph.length>1?'s':''}`:''}">
+      <span class="num">${n}</span><span class="dname">${WD_PT[wd].slice(0,3)}</span>${inner}
       <svg class="add" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="3"/><circle cx="12" cy="13" r="3.5"/><path d="M8.5 6l1.5-2h4l1.5 2"/></svg></button>`;
   }
   $('cal').innerHTML = h;

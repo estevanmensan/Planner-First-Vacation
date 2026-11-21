@@ -92,3 +92,36 @@ dialog::backdrop{background:rgba(40,10,25,.45)}
 
 /* garante que elementos com o atributo hidden fiquem escondidos */
 [hidden]{display:none!important}
+
+/* ---------- Fotos cobrindo o dia + efeito leque ---------- */
+.day.has-ph{overflow:hidden;color:#fff;background:#1a1216}
+.day.has-ph:hover{background:#1a1216}
+.fan{position:absolute;inset:0;z-index:0;pointer-events:none}
+.fan img{position:absolute;object-fit:cover;display:block}
+/* uma foto: cobre o quadro todo */
+.fan.single img{inset:0;width:100%;height:100%;transition:transform .4s ease}
+.day:hover .fan.single img{transform:scale(1.06)}
+/* várias fotos: fundo desfocado + cartas em leque */
+.fan.multi .bg{inset:0;width:100%;height:100%;filter:blur(8px) brightness(.55);transform:scale(1.25)}
+.fan.multi .card{left:21%;top:12%;width:58%;height:74%;border:3px solid #fff;border-radius:6px;
+  box-shadow:0 6px 14px rgba(0,0,0,.45);transform-origin:50% 135%;transform:rotate(var(--r));
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);animation:abreLeque .55s cubic-bezier(.2,.8,.2,1) both;
+  animation-delay:calc(var(--i) * 70ms)}
+.day:hover .fan.multi .card,.day:focus-visible .fan.multi .card{transform:rotate(calc(var(--r) * 1.6)) translateY(-4px)}
+@keyframes abreLeque{from{transform:rotate(0deg) scale(.85);opacity:0}}
+/* textos por cima das fotos */
+.day.has-ph .num{z-index:2;background:rgba(0,0,0,.6);color:#fff;border-radius:999px;padding:1px 9px;font-weight:700}
+.day.has-ph .dname{z-index:2;color:#fff;text-shadow:0 1px 3px #000}
+.day.has-ph .add{display:none}
+.cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:18px 8px 6px;text-align:left;
+  background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font-size:12px;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.count{position:absolute;top:6px;right:7px;z-index:2;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+  border-radius:999px;padding:2px 8px;white-space:nowrap}
+@media(max-width:720px){
+  .day.has-ph{min-height:190px}
+  .day.has-ph .num{top:10px;left:10px}
+  .day.has-ph .dname{top:50px;left:14px}
+  .fan.multi .card{left:30%;width:40%}
+}
+@media(prefers-reduced-motion:reduce){.fan.multi .card{animation:none}}
